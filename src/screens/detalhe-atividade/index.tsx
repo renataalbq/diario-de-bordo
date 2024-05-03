@@ -1,10 +1,7 @@
 import { Menu } from "../../components/menu";
 
-interface DetalheAtividadeProps {
-    id?: string
-}
 
-const DetalheAtividade = (props: DetalheAtividadeProps) => {
+const DetalheAtividade = () => {
     return (
         <>
         <Menu />

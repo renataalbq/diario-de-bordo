@@ -1,4 +1,3 @@
-import React from 'react';
 import { Footer } from '../../components/footer';
 import { Menu } from '../../components/menu';
 import { Card } from '../../components/card';

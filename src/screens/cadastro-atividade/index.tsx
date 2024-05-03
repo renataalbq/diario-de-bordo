@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import { Menu } from "../../components/menu";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -6,15 +6,24 @@ import SpeechRecognition, {
 import { FaMicrophone, FaPause } from "react-icons/fa6";
 import { PhotoIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
+import { date_format } from "../../utils/date_format";
+import useCadastrarAtividade from "../../services/atividades/cadastrarAtividade";
 
 const CadastroAtividade = () => {
-  const navigate = useNavigate()
-  const {
-    transcript,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    usuario: {
+      id: 0
+    },
+    dataAtividade: "",
+    descricaoAtividade: "",
+    titulo: "",
+    atividadeTipo: 0,
+  });
+  const { cadastrarAtividade, error } = useCadastrarAtividade();
+
+  const { transcript, listening, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Seu navegador não suporta reconhecimento de voz.</span>;
@@ -31,16 +40,35 @@ const CadastroAtividade = () => {
     }
   };
 
-  const handleSave = () => {
-    navigate('/listagem-atividade')
-  }
+  const handleSave = async (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+    await cadastrarAtividade(formData);
+    if (!error) {
+      navigate("/listagem-atividade");
+    }
+  };
+
+  const handleInputChange = (e: { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    if (name === "dataAtividade") {
+      setFormData({
+        ...formData,
+        [name]: date_format(value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
 
   return (
     <>
       <Menu />
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Cadastro de Atividade</h1>
-        <form className="bg-gray-50 p-4 rounded-md mx-auto">
+        <form onSubmit={handleSave} className="bg-gray-50 p-4 rounded-md mx-auto">
           <div className="mb-4">
             <label
               htmlFor="titulo"
@@ -55,6 +83,8 @@ const CadastroAtividade = () => {
                 type="text"
                 autoComplete="titulo"
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                value={formData.titulo}
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -68,14 +98,35 @@ const CadastroAtividade = () => {
             <div className="mt-2">
               <select
                 id="tipo"
-                name="tipo"
+                name="atividadeTipo"
                 autoComplete="tipo-atividade"
+                value={formData.atividadeTipo}
+                onChange={handleInputChange}
                 className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               >
-                <option value="campo">Atividade de Campo</option>
-                <option value="evento">Evento</option>
-                <option value="palestra">Palestra</option>
+                <option value="">Selecione um Tipo</option>
+                <option value="0">Atividade de Campo</option>
+                <option value="1">Evento</option>
+                <option value="2">Palestra</option>
               </select>
+            </div>
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="dataAtividade"
+              className="block text-sm font-medium leading-6 text-gray-900"
+            >
+              Data da Atividade:
+            </label>
+            <div className="mt-2">
+              <input
+                id="dataAtividade"
+                name="dataAtividade"
+                type="date"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                value={formData.dataAtividade}
+                onChange={handleInputChange}
+              />
             </div>
           </div>
           <div className="mb-4">
@@ -122,9 +173,12 @@ const CadastroAtividade = () => {
             <div className="mt-2">
               <textarea
                 className="border rounded-md p-2 w-full h-32"
-                value={transcript}
+                value={formData.descricaoAtividade || transcript}
                 onChange={(e) => {
-                  resetTranscript();
+                  setFormData({
+                    ...formData,
+                    descricaoAtividade: e.target.value,
+                  });
                 }}
               />
             </div>
@@ -139,7 +193,7 @@ const CadastroAtividade = () => {
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             type="submit"
-            onClick={() => handleSave()}
+            onClick={handleSave}
           >
             Salvar Atividade
           </button>

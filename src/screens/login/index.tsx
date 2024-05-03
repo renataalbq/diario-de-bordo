@@ -1,44 +1,25 @@
-import { useNavigate } from "react-router-dom";
 import img from "../../assets/img.jpg";
 import { useState } from "react";
+import useLogin from "../../services/auth/login";
 
 export default function Login() {
- const navigate = useNavigate();
-    const [loginForm, setLoginForm] = useState({
-        email: "",
-        senha: "",
-    });
+  const [loginForm, setLoginForm] = useState({
+    login: "",
+    password: "",
+  });
+  const { handleLogin } = useLogin();
 
-    const handleLogin = async (event: { preventDefault: () => void; }) => {
-        event.preventDefault();
-        navigate("/home");
-        try {
-          const response = await fetch('api', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(loginForm),
-          });
-      
-          if (response.ok) {
-            const responseData = await response.json();
-            console.log(responseData)
-            navigate("/home");
-          } else {
-            alert('Falha no login. Verifique seu e-mail e senha.');
-          }
-        } catch (error) {
-            alert('Erro ao fazer login. Tente novamente mais tarde.');
-        }
-      };
-      
-    
-      const handleInputChange = (e: { target: { name: string; value: string; }; }) => {
-        const { name, value } = e.target;
-        setLoginForm({ ...loginForm, [name]: value });
-      };
-    
+  const handleInputChange = (e: {
+    target: { name: string; value: string };
+  }) => {
+    const { name, value } = e.target;
+    setLoginForm({ ...loginForm, [name]: value });
+  };
+
+  const handleSubmit = (event: { preventDefault: () => void; }) => {
+    event.preventDefault();
+    handleLogin(loginForm);
+  };
 
   return (
     <div className="bg-blue-400">
@@ -53,41 +34,45 @@ export default function Login() {
             <p className="mt-6 text-lg leading-8 text-gray-300">
               8° PB Escoteiros do mar Tenente Lucena
             </p>
-            <div className="mt-6 flex flex-col gap-y-4"> 
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={loginForm.email}
-                onChange={handleInputChange}
-                className="w-full rounded-md border-0 bg-white px-3.5 py-2 text-black shadow-sm sm:text-sm sm:leading-6"
-                placeholder="Email"
-              />
-              <input
-                id="senha"
-                name="senha"
-                type="password"
-                autoComplete="password"
-                required
-                value={loginForm.senha}
-                onChange={handleInputChange}
-                className="w-full rounded-md border-0 bg-white px-3.5 py-2 text-black shadow-sm sm:text-sm sm:leading-6"
-                placeholder="Senha"
-              />
-              <button
-                type="submit"
-                className="w-full rounded-md bg-blue-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline-none"
-                onClick={handleLogin}
-              >
-                Entrar
-              </button>
-            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="mt-6 flex flex-col gap-y-4">
+                <input
+                  id="login"
+                  name="login"
+                  type="text"
+                  autoComplete="login"
+                  required
+                  value={loginForm.login}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border-0 bg-white px-3.5 py-2 text-black shadow-sm sm:text-sm sm:leading-6"
+                  placeholder="Login"
+                />
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="password"
+                  required
+                  value={loginForm.password}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border-0 bg-white px-3.5 py-2 text-black shadow-sm sm:text-sm sm:leading-6"
+                  placeholder="Senha"
+                />
+                <button
+                  type="submit"
+                  className="w-full rounded-md bg-blue-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline-none"
+                >
+                  Entrar
+                </button>
+              </div>
+            </form>
             <div className="pt-6 text-white">
-                <p>Ainda não tem cadastro? {''}
-                <a href="/cadastro-usuario" className="underline text-lg">Cadastre-se</a>
-            </p>
+              <p>
+                Ainda não tem cadastro? {""}
+                <a href="/cadastro-usuario" className="underline text-lg">
+                  Cadastre-se
+                </a>
+              </p>
             </div>
           </div>
           <div className="relative mt-14 h-80 lg:mt-8">
