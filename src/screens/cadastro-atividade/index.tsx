@@ -11,20 +11,7 @@ import { jwtDecode } from "jwt-decode";
 
 const CadastroAtividade = () => {
   const navigate = useNavigate();
-  const [userId, setUserId] = useState<string>('');
-
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        console.log(decoded.sub)
-        setUserId(decoded.sub);
-      } catch (error) {
-        console.error('Failed to decode token', error);
-      }
-    }
-  }, [userId]);
+  const [userId, setUserId] = useState<string>("");
 
   const [formData, setFormData] = useState({
     usuario: {
@@ -34,12 +21,24 @@ const CadastroAtividade = () => {
     descricaoAtividade: "",
     titulo: "",
     atividadeTipo: 0,
-    imagemBase64: ""
+    imagemBase64: "",
   });
   const { cadastrarAtividade, error } = useCadastrarAtividade();
   const [base64, setBase64] = useState("");
   const { transcript, listening, browserSupportsSpeechRecognition } =
     useSpeechRecognition();
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.sub);
+      } catch (error) {
+        console.error("Failed to decode token", error);
+      }
+    }
+  }, []);
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Seu navegador não suporta reconhecimento de voz.</span>;
@@ -58,8 +57,10 @@ const CadastroAtividade = () => {
 
   const handleSave = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    await cadastrarAtividade(formData);
-    console.log(formData)
+    const updatedFormData = { ...formData, imagemBase64: base64 };
+
+    await cadastrarAtividade(updatedFormData);
+    console.log(formData);
     if (!error) {
       navigate("/listagem-atividade");
     }
@@ -69,30 +70,24 @@ const CadastroAtividade = () => {
     target: { name: string; value: string };
   }) => {
     const { name, value } = e.target;
-      setFormData({
-        ...formData,
-        [name]: value,
-      });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-
-  async function handleFileChange(event) {
+  const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      try {
-        const base64String = await toBase64(file);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-  
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const base64String = btoa(e.target.result);
+      setBase64(base64String);
+    };
+
+    reader.readAsBinaryString(file);
+  };
+
   return (
     <>
       <Menu />
@@ -189,7 +184,7 @@ const CadastroAtividade = () => {
                         name="file-upload"
                         type="file"
                         className="sr-only"
-                        onChange={handleFileChange}
+                        onChange={handleFileUpload}
                       />
                     </label>
                   </div>
@@ -226,7 +221,8 @@ const CadastroAtividade = () => {
           </div>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            type="submit">
+            type="submit"
+          >
             Salvar Atividade
           </button>
         </form>
