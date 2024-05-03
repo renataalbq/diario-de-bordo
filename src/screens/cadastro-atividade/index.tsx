@@ -52,17 +52,10 @@ const CadastroAtividade = () => {
     target: { name: string; value: string };
   }) => {
     const { name, value } = e.target;
-    if (name === "dataAtividade") {
-      setFormData({
-        ...formData,
-        [name]: date_format(value),
-      });
-    } else {
       setFormData({
         ...formData,
         [name]: value,
       });
-    }
   };
 
   const handleFileChange = (event: { target: { files: unknown[]; }; }) => {
