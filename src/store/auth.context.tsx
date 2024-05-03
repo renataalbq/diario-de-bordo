@@ -4,11 +4,13 @@ import {jwtDecode} from 'jwt-decode';
 interface IPayload {
   role: number;
   login: string;
+  id: string;
 }
 
 interface AuthContextType {
   token: string | null;
   login: string;
+  id: string;
   entrar: (token: string) => void;
   sair: () => void;
 }
@@ -37,6 +39,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return {
           token,
           login: decoded.login,
+          id: decoded.id,
           entrar: () => {},
           sair: () => {},
         };
@@ -47,6 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return {
       token: null,
       login: '',
+      id: '',
       entrar: () => {},
       sair: () => {},
     };
@@ -60,6 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthState({
       token: newToken,
       login: decoded.login,
+      id: decoded.id,
       entrar,
       sair,
     });
@@ -70,6 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setAuthState({
       token: null,
       login: '',
+      id: '',
       entrar,
       sair,
     });

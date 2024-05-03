@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu } from "../../components/menu";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -6,19 +6,35 @@ import SpeechRecognition, {
 import { FaMicrophone, FaPause } from "react-icons/fa6";
 import { PhotoIcon } from "@heroicons/react/16/solid";
 import { useNavigate } from "react-router-dom";
-import { date_format } from "../../utils/date_format";
 import useCadastrarAtividade from "../../services/atividades/cadastrarAtividade";
+import { jwtDecode } from "jwt-decode";
 
 const CadastroAtividade = () => {
   const navigate = useNavigate();
+  const [userId, setUserId] = useState<string>('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log(decoded.sub)
+        setUserId(decoded.sub);
+      } catch (error) {
+        console.error('Failed to decode token', error);
+      }
+    }
+  }, [userId]);
+
   const [formData, setFormData] = useState({
     usuario: {
-      id: 0,
+      id: userId,
     },
     dataAtividade: "",
     descricaoAtividade: "",
     titulo: "",
     atividadeTipo: 0,
+    imagemBase64: ""
   });
   const { cadastrarAtividade, error } = useCadastrarAtividade();
   const [base64, setBase64] = useState("");
@@ -43,6 +59,7 @@ const CadastroAtividade = () => {
   const handleSave = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
     await cadastrarAtividade(formData);
+    console.log(formData)
     if (!error) {
       navigate("/listagem-atividade");
     }
@@ -58,17 +75,24 @@ const CadastroAtividade = () => {
       });
   };
 
-  const handleFileChange = (event: { target: { files: unknown[]; }; }) => {
+  const toBase64 = (file: Blob) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+  async function handleFileChange(event) {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBase64(reader.result);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const base64String = await toBase64(file);
+      } catch (error) {
+        console.error(error);
+      }
     }
-  };
-
+  }
+  
   return (
     <>
       <Menu />
