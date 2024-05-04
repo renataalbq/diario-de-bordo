@@ -3,4 +3,5 @@ export interface IUsuario {
     password: string;  
     email?: string;
     nome?: string;
+    id: number;
 }

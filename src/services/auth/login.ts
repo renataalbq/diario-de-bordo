@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../store/auth.context';
 
 const useLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { entrar } = useAuth()
   const login = (authToken: string) => {
     localStorage.setItem('authToken', authToken);
   };
@@ -24,8 +22,8 @@ const useLogin = () => {
       if (response.ok) {
         const responseData = await response.json();
         const authToken = responseData.token;
-        entrar(authToken);
-        console.log(responseData)
+        login(authToken);
+
         navigate("/home");
       } else {
         setError('Falha no login. Verifique seu e-mail e senha.');

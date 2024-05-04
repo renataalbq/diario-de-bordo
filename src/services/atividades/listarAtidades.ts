@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { authorizedFetch } from '../auth/interceptor';
 
 function useListarAtividades() {
   const [atividades, setAtividades ] = useState(null);
@@ -8,7 +9,7 @@ function useListarAtividades() {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch('http://26.27.1.67:8080/atividade/getAllPage', {
+    authorizedFetch('http://26.27.1.67:8081/atividade/getAllPage', {
       method: 'GET',
     })
       .then((response) => response.json())

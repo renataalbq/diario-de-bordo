@@ -22,7 +22,7 @@ export const Routes = createBrowserRouter([
     element: <ListagemAtividade />,
   },
   {
-    path: "/detalhe-atividade",
+    path: "/detalhe-atividade/:id",
     element: <DetalheAtividade />,
   },
   {

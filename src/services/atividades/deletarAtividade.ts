@@ -1,14 +1,15 @@
 import { useState } from 'react';
+import { authorizedFetch } from '../auth/interceptor';
 
 function useDeletarAtividade() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const deletarAtividade = async (id: string) => {
+  const deletarAtividade = async (id: number) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://26.27.1.67:8081/atividade/delete/${id}`, {
+      const response = await authorizedFetch(`http://26.27.1.67:8081/atividade/delete/${id}`, {
         method: 'DELETE',
       });
 

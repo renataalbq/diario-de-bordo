@@ -4,7 +4,7 @@ function useDeletarUsuario() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const deletarUsuario = async (id: string) => {
+  const deletarUsuario = async (id: number) => {
     setIsLoading(true);
 
     try {

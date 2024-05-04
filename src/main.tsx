@@ -4,12 +4,11 @@ import App from './App.tsx'
 import './index.css'
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { AuthProvider } from './store/auth.context.tsx';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <AuthProvider>
+   
       <App />
-    </AuthProvider>
+
   </React.StrictMode>,
 )
