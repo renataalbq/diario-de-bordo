@@ -6,6 +6,7 @@ import CadastroAtividade from "../screens/cadastro-atividade";
 import CadastroUsuario from "../screens/cadastro-usuario";
 import DetalheAtividade from "../screens/detalhe-atividade";
 import Login from "../screens/login";
+import ListagemUsuario from "../screens/listagem-usuario";
 
 export const Routes = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const Routes = createBrowserRouter([
   {
     path: "/cadastro-usuario",
     element: <CadastroUsuario />,
+  },
+  {
+    path: "/listagem-usuario",
+    element: <ListagemUsuario />,
   },
   {
     path: "/",

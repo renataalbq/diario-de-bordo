@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../store/auth.context';
 
 const useLogin = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const { entrar } = useAuth()
   const login = (authToken: string) => {
     localStorage.setItem('authToken', authToken);
   };
@@ -23,7 +24,7 @@ const useLogin = () => {
       if (response.ok) {
         const responseData = await response.json();
         const authToken = responseData.token;
-        login(authToken);
+        entrar(authToken);
         console.log(responseData)
         navigate("/home");
       } else {

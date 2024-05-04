@@ -1,6 +1,6 @@
 export function authorizedFetch(url: any, options: any) {
     const token = localStorage.getItem('token');
-  
+    console.log(token)
     if (token) {
       options.headers = options.headers ?? {};
       options.headers['Authorization'] = `Bearer ${token}`;

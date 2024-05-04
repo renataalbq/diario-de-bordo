@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { authorizedFetch } from '../auth/interceptor';
 
 function useListarUsuarios() {
   const [usuarios, setUsuarios ] = useState(null);
@@ -8,7 +9,7 @@ function useListarUsuarios() {
   useEffect(() => {
     setIsLoading(true);
 
-    fetch('http://26.27.1.67:8081/usuario/getAllPage', {
+    authorizedFetch('http://26.27.1.67:8081/usuario/getAllPage', {
       method: 'GET',
     })
       .then((response) => response.json())

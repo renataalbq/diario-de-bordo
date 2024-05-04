@@ -1,10 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from '../../assets/logo.png'
 import { IoMdMenu } from "react-icons/io";
 import { IoClose } from "react-icons/io5";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../../store/auth.context";
 
 export const Menu = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [role, setRole] = useState('')
+    const { logout } = useAuth();
+     
+    useEffect(() => {
+      const token = localStorage.getItem("authToken");
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          setRole(decoded.role)
+        } catch (error) {
+          console.error("Failed to decode token", error);
+        }
+      }
+    }, []);
   
     return (
     <div className="px-4 py-5 mx-auto bg-blue-100 sm:max-w-full md:max-w-full lg:max-w-full md:px-24 lg:px-8">
@@ -20,6 +36,7 @@ export const Menu = () => {
                 Início
               </a>
             </li>
+            {role == "USER" ?
             <li>
               <a
                 href="/cadastro-atividade"
@@ -30,7 +47,18 @@ export const Menu = () => {
                 Cadastro de Atividades
               </a>
             </li>
-            
+            :
+            <li>
+              <a
+                href="/listagem-usuario"
+                aria-label="Escoteiros"
+                title="Escoteiros"
+                className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
+              >
+                Escoteiros
+              </a>
+            </li>
+            }
           </ul>
           <a
             href="/home"
@@ -48,6 +76,7 @@ export const Menu = () => {
             <li>
               <a
                 href="/"
+                onClick={logout}
                 aria-label="Sair"
                 title="Sair"
                 className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
@@ -106,6 +135,7 @@ export const Menu = () => {
                           Início
                         </a>
                       </li>
+                     {role == "USER" ?
                       <li>
                         <a
                           href="/cadastro-atividade"
@@ -116,10 +146,21 @@ export const Menu = () => {
                           Cadastro de Atividades
                         </a>
                       </li>
-                      
+                      :
+                      <li>
+                        <a
+                          href="/listagem-usuarios"
+                          aria-label="Escoteiros"
+                          title="Escoteiros"
+                          className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"
+                        >
+                         Escoteiros
+                        </a>
+                      </li>}
                       <li>
                         <a
                           href="/"
+                          onClick={logout}
                           aria-label="Sair"
                           title="Sair"
                           className="font-medium tracking-wide text-gray-700 transition-colors duration-200 hover:text-deep-purple-accent-400"

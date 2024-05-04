@@ -80,7 +80,7 @@ const CadastroAtividade = () => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        setUserId(decoded.sub);
+        setUserId(decoded.id);
       } catch (error) {
         console.error("Failed to decode token", error);
       }

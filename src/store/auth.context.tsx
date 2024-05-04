@@ -1,21 +1,20 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import {jwtDecode} from 'jwt-decode';
-
 interface IPayload {
-  role: number;
+  id: string
+  role: number | null;
   login: string;
-  id: string;
 }
-
 interface AuthContextType {
   token: string | null;
+  role: number | null;
+  id: string
   login: string;
-  id: string;
   entrar: (token: string) => void;
-  sair: () => void;
+  logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType>(null!);
+const AuthContext = createContext<AuthContextType>(null!); // Usando 'null!' para simplificar a inicialização
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -35,13 +34,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (token) {
       try {
         const decoded: IPayload = jwtDecode(token);
-        console.log(decoded, 'decoded')
         return {
           token,
+          role: decoded.role,
           login: decoded.login,
           id: decoded.id,
           entrar: () => {},
-          sair: () => {},
+          logout: () => {},
         };
       } catch (error) {
         localStorage.clear();
@@ -49,10 +48,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     return {
       token: null,
+      role: 0,
       login: '',
       id: '',
       entrar: () => {},
-      sair: () => {},
+      logout: () => {},
     };
   };
 
@@ -63,29 +63,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem('token', newToken);
     setAuthState({
       token: newToken,
+      role: decoded.role,
       login: decoded.login,
       id: decoded.id,
       entrar,
-      sair,
+      logout,
     });
   };
 
-  const sair = () => {
+  const logout = () => {
     localStorage.clear();
     setAuthState({
       token: null,
+      role: null,
       login: '',
       id: '',
       entrar,
-      sair,
+      logout,
     });
   };
 
   useEffect(() => {
     setAuthState((prevState) => ({
       ...prevState,
-      sair,
       entrar,
+      logout,
     }));
   }, []);
 
