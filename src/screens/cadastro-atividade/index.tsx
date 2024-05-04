@@ -25,20 +25,7 @@ const CadastroAtividade = () => {
   });
   const { cadastrarAtividade, error } = useCadastrarAtividade();
   const [base64, setBase64] = useState("");
-  const { transcript, listening, browserSupportsSpeechRecognition } =
-    useSpeechRecognition();
-
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUserId(decoded.sub);
-      } catch (error) {
-        console.error("Failed to decode token", error);
-      }
-    }
-  }, []);
+  const { transcript, listening, browserSupportsSpeechRecognition } = useSpeechRecognition();
 
   if (!browserSupportsSpeechRecognition) {
     return <span>Seu navegador não suporta reconhecimento de voz.</span>;
@@ -87,6 +74,28 @@ const CadastroAtividade = () => {
 
     reader.readAsBinaryString(file);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.sub);
+      } catch (error) {
+        console.error("Failed to decode token", error);
+      }
+    }
+  }, []);
+
+
+  useEffect(() => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      usuario: {
+        id: userId 
+      }
+    }));
+  }, [userId]);
 
   return (
     <>
@@ -166,7 +175,7 @@ const CadastroAtividade = () => {
             </label>
             <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
               {base64 ? (
-                <img src={base64} alt="Preview" />
+                <img src={base64} alt="Preview" style={{ maxWidth: "100%", height: "auto" }} />
               ) : (
                 <div className="text-center">
                   <PhotoIcon
